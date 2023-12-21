@@ -1,21 +1,43 @@
-import { Injectable, Res } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Response } from 'express';
+import { LoginDto } from './dtos/login-dto';
+import * as bcrypt from 'bcrypt';
+import { UserService } from 'src/user/user.service';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
-  constructor(private jwtService: JwtService, private config: ConfigService) { }
+  constructor(
+    private userService: UserService,
+    private jwtService: JwtService,
+    private config: ConfigService,
+  ) {}
 
-  async register() { }
+  async login(loginDto: LoginDto) {
+    const user: User = await this.userService.findOneByEmail(loginDto.email);
 
-  async login() {
-    return this.jwtService.sign({ id: 1 }, {
-      secret: this.config.get("TOKEN_SECRET"), 
-      issuer: this.config.get("TOKEN_ISSUER"),
-      audience: this.config.get("TOKEN_AUDIENCE"),
-      expiresIn: '1h',
-      algorithm: "HS384"
-    })
+    if (!user || !(await bcrypt.compare(loginDto.password, user?.password)))
+      throw new NotFoundException('Usuário ou senha inválidos!');
+
+    return this.jwtService.sign(
+      {
+        id: user.id,
+      },
+      {
+        secret: this.config.get('TOKEN_SECRET'),
+        issuer: this.config.get('TOKEN_ISSUER'),
+        audience: this.config.get('TOKEN_AUDIENCE'),
+        expiresIn: String(this.config.get('TOKEN_EXPIRES_IN_HOURS')) + 'h',
+        algorithm: 'HS384',
+      },
+    );
+  }
+
+  async register(createUserDto: CreateUserDto) {
+    const user = this.userService.create(createUserDto);
+    return user;
   }
 }
+

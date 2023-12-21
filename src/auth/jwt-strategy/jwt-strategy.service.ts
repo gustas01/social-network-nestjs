@@ -24,8 +24,10 @@ export class JwtStrategyService extends PassportStrategy(Strategy, 'jwt') {
   //Aqui, pegar o ID do user que vem no token (no payload) e verificar se o usuário existe,
   //se existir, retorna o usuário, para ser adicionado no req.user do express no caso; caso não
   //exista, retorne null
-  validate(payload: any,) {        
-    return { userName: "gustas" }
+  async validate(payload: any) {        
+    console.log(payload);
+    
+    return payload;
   }
 
 

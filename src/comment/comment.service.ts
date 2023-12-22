@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
@@ -24,25 +29,46 @@ export class CommentService {
   async findAllByUser(userId: string) {
     const comment: Comment[] = await this.commentRepository.find({
       relations: { author: false },
-      where: { author:  {id: userId} } as FindOptionsWhere<Comment>,
+      where: { author: { id: userId } } as FindOptionsWhere<Comment>,
     });
-    return comment
+    return comment;
   }
 
   async findOne(commentId: string) {
     const comment: Comment = await this.commentRepository.findOne({
       relations: { author: false },
-      where: { id:  commentId },
+      where: { id: commentId },
     });
-    return comment
+    return comment;
   }
 
-  async update(id: string, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
+  async update(id: string, userId: string, updateCommentDto: UpdateCommentDto) {
+    if (!Object.keys(updateCommentDto).length)
+      throw new BadRequestException('Nenhuma informação fornecida para atualização!');
+
+    const comment = await this.commentRepository.findOne({where: { id }, relations: {author: true} });
+
+    if (comment.author.id !== userId)
+      throw new UnauthorizedException('Impossível alterar comentário de outro usuário!');
+
+    if (!comment) throw new NotFoundException('Comentário não encontrado');
+
+    await this.commentRepository.update(id, updateCommentDto);
+
+    return { msg: 'Comentário atualizado com sucesso!' };
   }
 
-  async remove(id: string) {
-    return `This action removes a #${id} comment`;
+  async remove(id: string, userId: string,) {
+    const comment = await this.commentRepository.findOne({where: { id }, relations: {author: true} });
+
+    if (comment.author.id !== userId)
+    throw new UnauthorizedException('Impossível apagar comentário de outro usuário!');
+
+    if (!comment) throw new NotFoundException('Comentário não encontrado');
+
+    await this.commentRepository.delete(id);
+
+    return { msg: 'Comentário apagado com sucesso!' };
   }
 }
 

@@ -31,12 +31,16 @@ export class CommentController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentService.update(id, updateCommentDto);
+  @UseGuards(AuthGuard('jwt'))
+  update(@Param('id') id: string, @Req() req: Request, @Body() updateCommentDto: UpdateCommentDto) {
+    const { id: userId } = req.user as User
+    return this.commentService.update(id, userId, updateCommentDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentService.remove(id);
+  @UseGuards(AuthGuard('jwt'))
+  remove(@Param('id') id: string, @Req() req: Request) {
+    const { id: userId } = req.user as User
+    return this.commentService.remove(id, userId,);
   }
 }

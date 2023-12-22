@@ -21,6 +21,8 @@ export class AuthController {
       secure: true,
       path: '/',
     });
+
+    return {msg: "Usuário autenticado com sucesso!"}
   }
 
   @Post('register')

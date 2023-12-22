@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Comment } from "src/comment/entities/comment.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class User {
@@ -14,4 +15,13 @@ export class User {
   @Column({ nullable: false })
   password: string;
 
+  @Column({nullable: true})
+  avatarUrl: string
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments: Comment[]
+  
+  // @Column()
+  // @JoinColumn()
+  // post: Post[]
 }

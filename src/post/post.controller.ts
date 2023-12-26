@@ -13,14 +13,14 @@ export class PostController {
   @Post()
   @UseGuards(AuthGuard('jwt'))
   create(@Body() createPostDto: CreatePostDto, @Req() req: Request) {
-    const {id: userId} = req.user as User
+    const { id: userId } = req.user as User;
     return this.postService.create(createPostDto, userId);
   }
-  
+
   @Get()
   @UseGuards(AuthGuard('jwt'))
   findAllByUser(@Req() req: Request) {
-    const {id: userId} = req.user as User
+    const { id: userId } = req.user as User;
     return this.postService.findAllByUser(userId);
   }
 
@@ -30,12 +30,17 @@ export class PostController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postService.update(id, updatePostDto);
+  @UseGuards(AuthGuard('jwt'))
+  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto, @Req() req: Request) {
+    const { id: userId } = req.user as User;
+    return this.postService.update(id, userId, updatePostDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(id);
+  @UseGuards(AuthGuard('jwt'))
+  remove(@Param('id') id: string, @Req() req: Request) {
+    const { id: userId } = req.user as User;
+    return this.postService.remove(id, userId);
   }
 }
+

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,16 +37,30 @@ export class PostService {
       relations: { author: true },
     });
 
-    if(!post) return new NotFoundException("Postagem apagada ou inexistente!")
+    if (!post) throw new NotFoundException('Postagem apagada ou inexistente!');
 
     return post;
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async update(id: string, userId: string, updatePostDto: UpdatePostDto) {
+    if (!Object.keys(updatePostDto).length)
+      throw new BadRequestException('Nenhuma informação fornecida para atualização!');
+
+    const post: Post = await this.postRepository.findOne({where: {id}, relations: {author: true}})
+
+    if (!post) throw new NotFoundException('Postagem apagada ou inexistente!');
+
+    if (post.author.id !== userId)
+      throw new UnauthorizedException('Impossível alterar comentário de outro usuário!');
+
+    if (!post) throw new NotFoundException('Comentário não encontrado');
+
+    await this.postRepository.update(id, updatePostDto);
+    
+    return { msg: 'Post atualizado com sucesso!' };
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
     return `This action removes a #${id} post`;
   }
 }

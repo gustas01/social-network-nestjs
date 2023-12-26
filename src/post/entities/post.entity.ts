@@ -7,7 +7,7 @@ export class Post {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({nullable: false, length: 30})
+  @Column({nullable: false, length:50})
   title: string
   
   @Column({nullable: false, length: 1000})

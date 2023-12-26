@@ -1,3 +1,4 @@
+import { Post } from "src/post/entities/post.entity";
 import { User } from "src/user/entities/user.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -15,7 +16,7 @@ export class Comment {
   @ManyToOne(() => User, (user) => user.comments, {cascade: true})
   author: User
   
-  // @ManyToOne(() => Post, {cascade: true})
-  // @Column()
-  // post: Post
+  @ManyToOne(() => Post, {cascade: true})
+  @Column()
+  post: Post
 }

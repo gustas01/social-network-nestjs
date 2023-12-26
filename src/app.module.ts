@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { CommentModule } from './comment/comment.module';
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CommentModule } from './comment/comment.module';
     AuthModule,
     UserModule,
     CommentModule,
+    PostModule,
   ],
   controllers: [],
   providers: [],

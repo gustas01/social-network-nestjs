@@ -61,7 +61,16 @@ export class PostService {
   }
 
   async remove(id: string, userId: string) {
-    return `This action removes a #${id} post`;
+    const post: Post = await this.postRepository.findOne({where: {id}, relations: {author: true}})
+
+    if (!post) throw new NotFoundException('Postagem apagada ou inexistente!');
+
+    if (post.author.id !== userId)
+    throw new UnauthorizedException('Impossível apagar comentário de outro usuário!');
+
+    await this.postRepository.delete(id);
+
+    return { msg: 'Postagem apagada com sucesso!' };
   }
 }
 

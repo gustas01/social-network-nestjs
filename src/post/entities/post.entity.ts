@@ -13,7 +13,7 @@ export class Post {
   @Column({ nullable: false, length: 1000 })
   content: string
 
-  @ManyToOne(() => User, (user) => user.posts, { cascade: true })
+  @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
   author: User
 
   @OneToMany(() => Comment, (comment) => comment.post)

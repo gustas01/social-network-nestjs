@@ -11,18 +11,18 @@ import { AuthGuard } from '@nestjs/passport';
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
-  @Post()
+  @Post(':postId')
   @UseGuards(AuthGuard('jwt'))
-  create(@Req() req: Request, @Body() createCommentDto: CreateCommentDto) {
-    const { id } = req.user as User
-    return this.commentService.create(id , createCommentDto);
+  create(@Param('id') postId: string, @Req() req: Request, @Body() createCommentDto: CreateCommentDto) {
+    const { id: userId } = req.user as User
+    return this.commentService.create(userId, postId, createCommentDto);
   }
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
   findAll(@Req() req: Request, ) {
-    const { id } = req.user as User
-    return this.commentService.findAllByUser(id);
+    const { id: userId } = req.user as User
+    return this.commentService.findAllByUser(userId);
   }
 
   @Get(':id')

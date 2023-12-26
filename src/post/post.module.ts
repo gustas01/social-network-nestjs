@@ -12,6 +12,7 @@ import { Post } from './entities/post.entity';
   ],
   controllers: [PostController],
   providers: [PostService],
+  exports: [PostService]
 })
 export class PostModule {}
 

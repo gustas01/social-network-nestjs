@@ -7,13 +7,13 @@ export class Post {
   @PrimaryGeneratedColumn('uuid')
   id: string
 
-  @Column({nullable: false, length:50})
+  @Column({ nullable: false, length: 50 })
   title: string
   
-  @Column({nullable: false, length: 1000})
+  @Column({ nullable: false, length: 1000 })
   content: string
 
-  @ManyToOne(() => User, (user) => user.posts, {cascade: true})
+  @ManyToOne(() => User, (user) => user.posts, { cascade: true })
   author: User
 
   @OneToMany(() => Comment, (comment) => comment.post)

@@ -11,24 +11,27 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
+import { PostService } from 'src/post/post.service';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment) private commentRepository: Repository<Comment>,
     private userService: UserService,
+    private postService: PostService,
   ) {}
 
-  async create(userId: string, createCommentDto: CreateCommentDto) {
+  async create(userId: string, postId: string, createCommentDto: CreateCommentDto) {
     const comment: Comment = this.commentRepository.create(createCommentDto);
     const user: User = await this.userService.findOne(userId);
     comment.author = user;
+    comment.post = await this.postService.findOne(postId);
     return await this.commentRepository.save(comment);
   }
 
   async findAllByUser(userId: string) {
     const comment: Comment[] = await this.commentRepository.find({
-      relations: { author: false },
+      relations: { author: false, post: true },
       where: { author: { id: userId } } as FindOptionsWhere<Comment>,
     });
     return comment;
@@ -36,7 +39,7 @@ export class CommentService {
 
   async findOne(commentId: string) {
     const comment: Comment = await this.commentRepository.findOne({
-      relations: { author: false },
+      relations: { author: false, post: true },
       where: { id: commentId },
     });
     return comment;

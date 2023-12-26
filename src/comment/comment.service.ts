@@ -7,7 +7,7 @@ import {
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Equal, FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
@@ -32,7 +32,7 @@ export class CommentService {
   async findAllByUser(userId: string) {
     const comment: Comment[] = await this.commentRepository.find({
       relations: { author: false, post: true },
-      where: { author: { id: userId } } as FindOptionsWhere<Comment>,
+      where: { author: { id: Equal(userId) } } as FindOptionsWhere<Comment>,
     });
     return comment;
   }
@@ -40,8 +40,11 @@ export class CommentService {
   async findOne(commentId: string) {
     const comment: Comment = await this.commentRepository.findOne({
       relations: { author: false, post: true },
-      where: { id: commentId },
+      where: { id: Equal(commentId) },
     });
+
+    if (!comment) throw new NotFoundException('Comentário apagado ou inexistente!');
+    
     return comment;
   }
 

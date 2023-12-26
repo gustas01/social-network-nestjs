@@ -3,7 +3,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './entities/post.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Equal, FindOptionsWhere, Repository } from 'typeorm';
 import { UserService } from 'src/user/user.service';
 import { User } from 'src/user/entities/user.entity';
 
@@ -26,14 +26,14 @@ export class PostService {
   async findAllByUser(userId: string) {
     const posts: Post[] = await this.postRepository.find({
       relations: { author: false },
-      where: { author: { id: userId } } as FindOptionsWhere<Post>,
+      where: { author: { id: Equal(userId) } } as FindOptionsWhere<Post>,
     });
     return posts;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string) {    
     const post: Post = await this.postRepository.findOne({
-      where: { id },
+      where: { id: Equal(id) },
       relations: { author: true },
     });
 

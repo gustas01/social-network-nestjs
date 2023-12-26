@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,22 +24,29 @@ export class PostService {
   }
 
   async findAllByUser(userId: string) {
-    const post: Post[] = await this.postRepository.find({
+    const posts: Post[] = await this.postRepository.find({
       relations: { author: false },
-      where: { author: {id: userId} } as FindOptionsWhere<Post>,
+      where: { author: { id: userId } } as FindOptionsWhere<Post>,
     });
+    return posts;
+  }
+
+  async findOne(id: string) {
+    const post: Post = await this.postRepository.findOne({
+      where: { id },
+      relations: { author: true },
+    });
+
+    if(!post) return new NotFoundException("Postagem apagada ou inexistente!")
+
     return post;
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} post`;
-  }
-
-  async update(id: number, updatePostDto: UpdatePostDto) {
+  async update(id: string, updatePostDto: UpdatePostDto) {
     return `This action updates a #${id} post`;
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     return `This action removes a #${id} post`;
   }
 }

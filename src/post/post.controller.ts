@@ -16,10 +16,12 @@ export class PostController {
     const {id: userId} = req.user as User
     return this.postService.create(createPostDto, userId);
   }
-
+  
   @Get()
-  findAll() {
-    return this.postService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  findAllByUser(@Req() req: Request) {
+    const {id: userId} = req.user as User
+    return this.postService.findAllByUser(userId);
   }
 
   @Get(':id')

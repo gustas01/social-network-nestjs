@@ -16,7 +16,6 @@ export class Comment {
   @ManyToOne(() => User, (user) => user.comments, {cascade: true})
   author: User
   
-  @ManyToOne(() => Post, {cascade: true})
-  @Column()
+  @ManyToOne(() => Post, (post) => post.comments, {cascade: true})
   post: Post
 }

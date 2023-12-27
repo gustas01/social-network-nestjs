@@ -1,6 +1,6 @@
 import { Comment } from "src/comment/entities/comment.entity";
 import { Post } from "src/post/entities/post.entity";
-import { Column, Entity, JoinColumn, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class User {
@@ -24,4 +24,12 @@ export class User {
   
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[]
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  friends: User[]
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  friendRequests: User[]
 }

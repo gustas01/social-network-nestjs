@@ -31,5 +31,9 @@ export class User {
 
   @ManyToMany(() => User)
   @JoinTable()
-  friendRequests: User[]
+  receivedFriendRequests: User[]
+  
+  @ManyToMany(() => User)
+  @JoinTable()
+  addressedFriendRequests: User[]
 }

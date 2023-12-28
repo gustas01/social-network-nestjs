@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,10 +12,13 @@ export class FriendshipService {
   async sendFriendRequest(sendFriendRequestDto: SendFriendRequestDto, userId: string) {
     const addressedUser: User = await this.usersRepository.findOne({
       where: { id: sendFriendRequestDto.addressedUserId },
-      relations: { receivedFriendRequests: true, addressedFriendRequests: true }, select: { email: true, id: true }
+      relations: { receivedFriendRequests: true }, select: { email: true, id: true }
     });
 
     if (!addressedUser) throw new NotFoundException('Usuário não encontrado!');
+  
+    if(addressedUser.receivedFriendRequests.some(el => el.id === userId))
+      throw new ConflictException ("Solicitação de amizade já enviada")
 
     const requesterUser: User = await this.usersRepository.findOne({
       where: { id: userId },
@@ -28,7 +31,7 @@ export class FriendshipService {
     await this.usersRepository.save(addressedUser);
     await this.usersRepository.save(requesterUser);
 
-    return { msg: "Solicitação de amizade enviada" }
+    return { msg: "Solicitação de amizade enviada com sucesso!'" }
   }
 
   async respondFriendRequest() {}

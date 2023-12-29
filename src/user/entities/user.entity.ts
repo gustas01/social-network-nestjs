@@ -29,11 +29,11 @@ export class User {
   @JoinTable()
   friends: User[]
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { onDelete: 'CASCADE' })
   @JoinTable()
   receivedFriendRequests: User[]
   
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, { onDelete: 'CASCADE' })
   @JoinTable()
   addressedFriendRequests: User[]
 }

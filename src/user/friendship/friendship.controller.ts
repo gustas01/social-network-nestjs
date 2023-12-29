@@ -11,14 +11,18 @@ import { User } from '../entities/user.entity';
 export class FriendshipController {
   constructor(private friendshipService: FriendshipService) {}
 
-  @Post()
+  @Post('sendRequest')
   @HttpCode(HttpStatus.OK)
   async sendFriendRequest(@Body() sendFriendRequestDto: SendFriendRequestDto, @Req() req: Request) {
     const { id: userId } = req.user as User;
     return await this.friendshipService.sendFriendRequest(sendFriendRequestDto, userId);
   }
-
-  @Post()
-  async respondFriendRequest(@Body() respondFriendRequestDto: RespondFriendRequestDto) {}
+  
+  @Post('respondRequest')
+  @HttpCode(HttpStatus.OK)
+  async respondFriendRequest(@Body() respondFriendRequestDto: RespondFriendRequestDto, @Req() req: Request) {
+    const { id: userId } = req.user as User;
+    return await this.friendshipService.respondFriendRequest(respondFriendRequestDto, userId);
+  }
 }
 
